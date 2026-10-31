@@ -1,5 +1,6 @@
 package com.petsalud.backendpetsalud.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,8 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
+    // WRITE_ONLY: se acepta en el body (registro) pero nunca se serializa hacia el cliente.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 

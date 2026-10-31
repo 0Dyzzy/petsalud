@@ -4,6 +4,7 @@ import com.petsalud.backendpetsalud.entity.Usuario;
 import com.petsalud.backendpetsalud.repository.UsuarioRepository;
 import com.petsalud.backendpetsalud.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Usuario registrarUsuario(Usuario usuario) {
         // Verificar si el email ya está registrado
@@ -22,6 +26,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioExistente.isPresent()) {
             throw new IllegalArgumentException("El email ya está registrado");
         }
+        // La contraseña se guarda siempre hasheada con BCrypt (nunca en claro).
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
 
