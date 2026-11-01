@@ -4,6 +4,7 @@ import com.petsalud.backendpetsalud.entity.Notificacion;
 import com.petsalud.backendpetsalud.service.NotificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,12 +16,14 @@ public class NotificacionController {
     private NotificacionService notificacionService;
 
     @PostMapping("/usuario/{usuarioId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Notificacion> enviarNotificacion(@PathVariable Long usuarioId, @RequestBody Notificacion notificacion) {
         Notificacion nuevaNotificacion = notificacionService.enviarNotificacion(usuarioId, notificacion);
         return ResponseEntity.ok(nuevaNotificacion);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Notificacion> obtenerNotificacionPorId(@PathVariable Long id) {
         return notificacionService.obtenerNotificacionPorId(id)
                 .map(ResponseEntity::ok)
@@ -28,24 +31,28 @@ public class NotificacionController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Notificacion>> listarNotificacionesPorUsuario(@PathVariable Long usuarioId) {
         List<Notificacion> notificaciones = notificacionService.listarNotificacionesPorUsuario(usuarioId);
         return ResponseEntity.ok(notificaciones);
     }
 
     @GetMapping("/usuario/{usuarioId}/no-leidas")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Notificacion>> listarNotificacionesNoLeidas(@PathVariable Long usuarioId) {
         List<Notificacion> notificaciones = notificacionService.listarNotificacionesNoLeidas(usuarioId);
         return ResponseEntity.ok(notificaciones);
     }
 
     @PutMapping("/{id}/leida")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> marcarComoLeida(@PathVariable Long id) {
         notificacionService.marcarComoLeida(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> eliminarNotificacion(@PathVariable Long id) {
         notificacionService.eliminarNotificacion(id);
         return ResponseEntity.noContent().build();

@@ -4,6 +4,7 @@ import com.petsalud.backendpetsalud.entity.ExpedienteMedico;
 import com.petsalud.backendpetsalud.service.ExpedienteMedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class ExpedienteMedicoController {
     private ExpedienteMedicoService expedienteMedicoService;
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('VETERINARIO','ADMIN')")
     public ResponseEntity<ExpedienteMedico> agregarRegistro(
             @RequestParam Long mascotaId,
             @RequestParam Long veterinarioId,
@@ -24,6 +26,7 @@ public class ExpedienteMedicoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ExpedienteMedico> obtenerRegistroPorId(@PathVariable Long id) {
         return expedienteMedicoService.obtenerRegistroPorId(id)
                 .map(ResponseEntity::ok)
@@ -31,12 +34,14 @@ public class ExpedienteMedicoController {
     }
 
     @GetMapping("/mascota/{mascotaId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ExpedienteMedico>> listarRegistrosPorMascota(@PathVariable Long mascotaId) {
         List<ExpedienteMedico> registros = expedienteMedicoService.listarRegistrosPorMascota(mascotaId);
         return ResponseEntity.ok(registros);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> eliminarRegistro(@PathVariable Long id) {
         expedienteMedicoService.eliminarRegistro(id);
         return ResponseEntity.noContent().build();
