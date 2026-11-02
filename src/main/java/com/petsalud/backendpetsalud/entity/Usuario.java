@@ -1,5 +1,6 @@
 package com.petsalud.backendpetsalud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,15 +43,21 @@ public class Usuario {
     private Rol rol;
 
     // Relaciones
+    // @JsonIgnore: las colecciones son el lado inverso (mappedBy), asi que no se serializan.
+    // Sin esto, Usuario -> mascotas -> propietario -> mascotas... recursa hasta cortar el JSON
+    @JsonIgnore
     @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL)
     private List<Mascota> mascotas;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Venta> ventas;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Recompensa> recompensas;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Notificacion> notificaciones;
 }
